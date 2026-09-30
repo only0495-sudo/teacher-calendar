@@ -18,6 +18,7 @@ let book;
 try{book=CalendarStore.load();if(book&&(!Array.isArray(book.workspaces)||!book.workspaces.length||!book.workspaces.every(w=>typeof w.id==='string'&&validate(w.data))||!book.workspaces.some(w=>w.id===book.active)))throw Error('invalid');}catch{storageProblem=true;book=null;}
 if(!book)book={version:2,active:'original',workspaces:[{id:'original',data:migrate(state)}]};
 if(globalThis.TeacherPreset&&!book.workspaces.some(w=>w.id===TeacherPreset.id)){const preset=structuredClone(TeacherPreset);if(validate(preset.data)){book.workspaces.push(preset);book.active=preset.id;}}
+if(globalThis.correctTeacherSchedule)book.workspaces.forEach(w=>correctTeacherSchedule(w));
 state=book.workspaces.find(w=>w.id===book.active).data;
 save=function(){try{book.workspaces.find(w=>w.id===book.active).data=state;CalendarStore.save(book);return true;}catch{toast('儲存失敗，請匯出備份保留資料。');return false;}};
 lessons=(d,c='all',data=state,includeCancelled=false)=>CalendarEngine.lessons(d,c,data,includeCancelled);

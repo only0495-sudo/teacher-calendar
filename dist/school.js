@@ -1,5 +1,5 @@
 'use strict';
-// Human-verified school data is loaded once. Later user edits are never overwritten.
+// Verified timetable with a versioned, targeted correction for existing workspaces.
 document.body.insertAdjacentHTML('beforeend',`<dialog id="weeklyDialog" style="width:min(960px,calc(100% - 28px))"><div class="modal-head"><h2>每週課表</h2><button class="close" data-close aria-label="關閉">×</button></div><div class="modal-body"><p id="weeklyCaption" class="muted"></p><div id="weeklyTable" class="import-table" style="max-height:65vh"></div><p class="help">探究實作列出原課表時段供參考；實際授課／換課日期請至探究專區登記。未自行推算學期目標或已完成堂數。</p></div></dialog>`);
 $('#showSchedule').onclick=()=>{
  $('#weeklyCaption').textContent=`${state.teacher} · ${state.termName}`;
@@ -9,13 +9,13 @@ $('#showSchedule').onclick=()=>{
  $('#weeklyDialog').showModal();
 };
 const previousRefreshInquiry=refreshInquiry;
-refreshInquiry=function(){previousRefreshInquiry();let reference=$('#inquiryReference');if(!reference){reference=document.createElement('p');reference.id='inquiryReference';reference.className='help';$('#inquiryClass').closest('label').after(reference);}const c=state.classes.find(c=>c.id===currentInquiry);reference.textContent=c?.slots.length?`原課表：${c.slots.map(s=>'週'+week[s.day]+' '+s.time).join('、')}${c.room?' · '+c.room:''}。實際換課另行登記。`:'尚無原排固定時段。';};
+refreshInquiry=function(){previousRefreshInquiry();let reference=$('#inquiryReference');if(!reference){reference=document.createElement('p');reference.id='inquiryReference';reference.className='help';$('#inquiryClass').closest('label').after(reference);}const c=state.classes.find(c=>c.id===currentInquiry);reference.textContent=c?.historicalSchedule?'這是舊課表保留的紀錄；正確課表的 210 班為選修物理。':c?.slots.length?`原課表：${c.slots.map(s=>'週'+week[s.day]+' '+s.time).join('、')}${c.room?' · '+c.room:''}。實際換課另行登記。`:'尚無原排固定時段。';};
 const previousSchoolRender=render;
 render=function(){
  previousSchoolRender();
  const real=state.teacher==='瑋澤老師';
  $('#sourceLabel').textContent=real?'已套用林口高中 115-1 行事曆及老師課表':'校內日期依目前工作區';
- $('#sourceReview').innerHTML=real?`<b>已輸入：8 個基礎物理班／每週 15 堂，3 個探究實作班／原排每週 5 堂</b><p class="help">探究實作的預定總堂數與實際完成紀錄尚未提供，請至專區設定。一般課程已排除學校明定假日、段考、運動會與高一校外教學；12/24、12/31 高一成果活動只排除上午課程。</p><details><summary>活動適用範圍待確認（未自動扣課）</summary>${(state.sourceNotes||[]).map(n=>`<p class="help"><b>${esc(n.date)}</b> ${esc(n.text)}</p>`).join('')}<p class="help">${esc(state.sourceDescription||'')}</p></details>`:'';
+ $('#sourceReview').innerHTML=real?`<b>已輸入：${state.classes.filter(c=>c.mode==='exam').length} 個物理班／每週 ${state.classes.filter(c=>c.mode==='exam').reduce((n,c)=>n+c.slots.length,0)} 堂，${state.classes.filter(c=>c.mode==='inquiry'&&!c.historicalSchedule).length} 個探究實作班／原排每週 ${state.classes.filter(c=>c.mode==='inquiry').reduce((n,c)=>n+c.slots.length,0)} 堂</b><p class="help">高一為基礎物理，高二為選修物理；210 班週二、週四第二節。探究實作的預定總堂數與實際完成紀錄尚未提供，請至專區設定。一般課程已排除學校明定假日、段考、運動會與高一校外教學；12/24、12/31 高一成果活動只排除上午課程。</p><details><summary>活動適用範圍待確認（未自動扣課）</summary>${(state.sourceNotes||[]).map(n=>`<p class="help"><b>${esc(n.date)}</b> ${esc(n.text)}</p>`).join('')}<p class="help">${esc(state.sourceDescription||'')}</p></details>`:'';
  $('#sourceReview').classList.toggle('hidden',!real);
  if(real)$('#upcoming').innerHTML=$('#upcoming').innerHTML.replaceAll('・示範／可編輯','');
  if(real)$('#inquirySummary').insertAdjacentHTML('beforeend','<p class="help">已保存照片中的原排時段；「每週課表」可查看全部課程。實際換課與完成堂數請另行登記。</p>');

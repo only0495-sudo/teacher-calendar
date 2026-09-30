@@ -82,7 +82,7 @@ globalThis.TeacherPreset = {
       {
         "id": "wz-p208",
         "name": "高二 208",
-        "subject": "基礎物理",
+        "subject": "選修物理",
         "mode": "exam",
         "target": 0,
         "inquiryMethod": "target",
@@ -100,7 +100,7 @@ globalThis.TeacherPreset = {
       {
         "id": "wz-p210",
         "name": "高二 210",
-        "subject": "基礎物理",
+        "subject": "選修物理",
         "mode": "exam",
         "target": 0,
         "inquiryMethod": "target",
@@ -108,13 +108,17 @@ globalThis.TeacherPreset = {
           {
             "day": 2,
             "time": "09:10"
+          },
+          {
+            "day": 4,
+            "time": "09:10"
           }
         ]
       },
       {
         "id": "wz-p213",
         "name": "高二 213",
-        "subject": "基礎物理",
+        "subject": "選修物理",
         "mode": "exam",
         "target": 0,
         "inquiryMethod": "target",
@@ -132,7 +136,7 @@ globalThis.TeacherPreset = {
       {
         "id": "wz-p214",
         "name": "高二 214",
-        "subject": "基礎物理",
+        "subject": "選修物理",
         "mode": "exam",
         "target": 0,
         "inquiryMethod": "target",
@@ -186,22 +190,6 @@ globalThis.TeacherPreset = {
           }
         ],
         "room": "物理實驗室 1"
-      },
-      {
-        "id": "wz-i210",
-        "name": "高二 210",
-        "subject": "自然探究與實作",
-        "mode": "inquiry",
-        "target": 0,
-        "targetConfigured": false,
-        "inquiryMethod": "target",
-        "slots": [
-          {
-            "day": 4,
-            "time": "09:10"
-          }
-        ],
-        "room": ""
       }
     ],
     "exams": [
@@ -485,6 +473,29 @@ globalThis.TeacherPreset = {
         "text": "10:00–12:00 高二性平講座（3）；參加班級待確認。"
       }
     ],
-    "sourceDescription": "依瑋澤老師提供之 115-1 課表照片與 685505580.pdf 整理；PDF 尾註的 114 學年度／115 年寒假文字疑為沿用，日期採主表 115-1 學期連續日期。"
+    "sourceDescription": "依瑋澤老師提供之 更正課表「對課表.png」與 685505580.pdf 整理；PDF 尾註的 114 學年度／115 年寒假文字疑為沿用，日期採主表 115-1 學期連續日期。",
+    "scheduleRevision": 2
   }
+};
+
+// Apply the verified correction once, only to the original teacher workspace.
+globalThis.correctTeacherSchedule=function(workspace){
+ if(workspace.id!==TeacherPreset.id||(workspace.data.scheduleRevision||0)>=2)return false;
+ const data=workspace.data;
+ data.scheduleCorrections||=[];
+ data.scheduleCorrections.push({revision:2,previousClasses:structuredClone(data.classes)});
+ for(const id of ['wz-p208','wz-p210','wz-p213','wz-p214']){
+  const course=data.classes.find(c=>c.id===id);
+  if(course)course.subject='選修物理';
+  if(course&&id==='wz-p210'&&!course.slots.some(s=>s.day===4&&s.time==='09:10'))course.slots.push({day:4,time:'09:10'});
+ }
+ const old=data.classes.find(c=>c.id==='wz-i210');
+ if(old){
+  const hasRecords=data.sessions.some(s=>s.classId===old.id)||Object.values(data.notes).some(n=>n.classId===old.id)||data.events.some(e=>e.classId===old.id);
+  if(hasRecords){old.name='高二 210（舊課表紀錄）';old.slots=[];old.historicalSchedule=true;}
+  else data.classes=data.classes.filter(c=>c.id!==old.id);
+ }
+ data.sourceDescription=TeacherPreset.data.sourceDescription;
+ data.scheduleRevision=2;
+ return true;
 };
