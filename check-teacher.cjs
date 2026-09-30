@@ -1,0 +1,16 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),E=require('./dist/engine.js');
+const ctx={};vm.runInNewContext(fs.readFileSync(__dirname+'/dist/teacher-data.js','utf8'),ctx);const d=JSON.parse(JSON.stringify(ctx.TeacherPreset.data));
+assert.equal(d.classes.filter(c=>c.mode==='exam').length,8);
+assert.equal(d.classes.filter(c=>c.mode==='exam').reduce((n,c)=>n+c.slots.length,0),15);
+assert.equal(d.classes.filter(c=>c.mode==='inquiry').reduce((n,c)=>n+c.slots.length,0),5);
+assert.deepEqual(d.exams.map(e=>[e.date,e.end]),[['2026-10-13','2026-10-14'],['2026-12-02','2026-12-03'],['2027-01-18','2027-01-19']]);
+assert.equal(E.lessons('2026-12-24','wz-p103',d).length,0);
+assert.equal(E.lessons('2026-12-24','wz-p214',d).length,1);
+assert.equal(E.lessons('2026-09-17','wz-p103',d).length,0);
+assert.equal(E.lessons('2026-09-17','wz-p214',d).length,1);
+assert.equal(E.lessons('2026-11-06','all',d).length,0);
+assert.equal(E.lessons('2026-11-09','all',d).length,0);
+assert.equal(E.lessons('2026-10-16','wz-p107',d).length,1);
+const counts=d.classes.filter(c=>c.mode==='exam').map(c=>E.remaining(c.id,0,d,{date:'2026-09-30',time:'23:00'}).total);
+assert.deepEqual(counts,[3,3,3,2,3,1,3,4]);
+console.log('PASS: actual teacher schedule and exam dates, grade-specific closures, partial-day exclusion, sports and makeup, countdowns',counts);

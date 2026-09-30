@@ -1,0 +1,8 @@
+review/
+preview*.png
+*-課表預覽.png
+*-備份.json
+.env
+.env.*
+!.env.example
+node_modules/
