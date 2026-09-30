@@ -1,0 +1,9 @@
+.auth-locked .layout{display:none!important}
+[hidden]{display:none!important}
+.auth-gate{min-height:100dvh;display:grid;place-items:center;padding:24px;background:#f4f4ec}
+body:not(.auth-locked) .auth-gate{display:none}
+.auth-card{width:min(100%,440px);padding:30px;border:1px solid #d6decf;border-radius:20px;background:#fffdf8;box-shadow:0 16px 48px #254f4310}
+.auth-card h1{font-size:28px;margin:14px 0}.auth-card p{line-height:1.7}.auth-card input{font-size:16px;width:100%;box-sizing:border-box}.auth-card button{min-height:44px}
+#cloudActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}#cloudActions:empty{display:none}#cloudActions p{flex-basis:100%;margin:0}#cloudActions select{max-width:100%;font-size:16px}
+.cloud-start{max-width:600px;margin:20px auto;padding:24px;border:1px solid #d6decf;border-radius:16px;background:#fffdf8}.cloud-start button{display:block;margin:12px 0;min-height:44px}
+.teacher-choices{display:grid;gap:14px;margin:26px 0}.teacher-choice{display:flex;align-items:center;gap:16px;width:100%;padding:18px;border:1px solid #d8e1d4;border-radius:14px;background:#f6f8f1;text-align:left;color:#254f43;cursor:pointer}.teacher-choice:hover{border-color:#254f43;background:#edf3e6}.teacher-choice:focus-visible{outline:3px solid #7eaa8e;outline-offset:3px}.teacher-choice b{font-size:20px}.teacher-choice small{display:block;margin-top:6px;color:#647266;font-size:13px}.teacher-choice>span:last-child{margin-left:auto}.teacher-avatar{display:grid;place-items:center;width:52px;height:52px;background:#dbe7d0;border-radius:50%;font-size:25px}.teacher-avatar.lilac{background:#e5def0;color:#645079}

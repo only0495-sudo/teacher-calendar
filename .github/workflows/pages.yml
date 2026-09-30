@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node check.cjs && node check-teacher.cjs
+      - run: node check.cjs && node check-teacher.cjs && node check-cloud.cjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
