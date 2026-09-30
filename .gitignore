@@ -6,3 +6,5 @@ preview*.png
 .env.*
 !.env.example
 node_modules/
+
+*-preview.png

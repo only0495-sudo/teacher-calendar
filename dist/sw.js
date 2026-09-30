@@ -1,5 +1,5 @@
 // App shell only. Uploaded files stay in IndexedDB; no user data is sent over the network.
-const CACHE='keri-shell-v3-2';
+const CACHE='keri-shell-v3-3';
 const ASSETS=['./','./index.html','./styles.css?v=4','./teacher-data.js','./school.js','./engine.js','./storage.js','./app.js','./features.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('keri-shell-')&&k!==CACHE).map(k=>caches.delete(k))))));

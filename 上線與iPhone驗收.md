@@ -1,3 +1,11 @@
+目前線上網址：https://only0495-sudo.github.io/teacher-calendar/
+程式庫：https://github.com/only0495-sudo/teacher-calendar
+2026-09-30 GitHub Pages 部署成功，HTTP 200，公開頁面課表倒數正常，未見 JavaScript 錯誤。
+已取得使用者對目前課表、學校行事曆與校務活動公開發布的明確同意。
+正式使用者限兩位老師，不開放公眾註冊；目前尚未接上登入及雲端同步。
+backend/supabase-schema.sql 已準備兩個指定使用者名額與逐列權限規則，但尚未套用或實際資料庫驗證。
+後續須移除公開前端內的個人初始化課表（teacher-data.js），將各自資料改存登入後的資料庫，並讓新帳號從空白工作區開始；不可把目前初始化資料當成私有帳號資料。
+
 # 上線與 iPhone 驗收
 
 ## 已完成
