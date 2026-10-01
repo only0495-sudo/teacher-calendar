@@ -21,9 +21,9 @@
   return result.sort((a,b)=>a.time.localeCompare(b.time));
  }
  function remaining(c,index,data,at){
-  const bounds=period(data,index);let total=0,excluded=0,extra=0;
-  for(let d=[bounds.start,at.date,data.termStart].sort().at(-1);d<bounds.end&&d<=data.termEnd;d=addDays(d,1))for(const l of lessons(d,c,data,true)){
-   if(d===at.date&&l.time<=at.time)continue;
+  const bounds=period(data,index),exam=data.exams[index],cutoff=exam.cutoffDate||bounds.end;let total=0,excluded=0,extra=0;
+  for(let d=[bounds.start,at.date,data.termStart].sort().at(-1);(d<cutoff||d===cutoff&&exam.cutoffTime)&&d<=data.termEnd;d=addDays(d,1))for(const l of lessons(d,c,data,true)){
+   if(d===at.date&&l.time<=at.time||d===cutoff&&exam.cutoffTime&&l.time>=exam.cutoffTime)continue;
    if(l.cancelled)excluded++;else{total++;if(l.extra)extra++;}
   }
   return{total,excluded,extra,...bounds};
@@ -47,5 +47,6 @@
   if(rows.length<2)throw Error('至少需要標題列與一筆資料');const headers=rows.shift();if(new Set(headers).size!==headers.length)throw Error('欄位名稱不可重複');
   return rows.map((r,i)=>{if(r.length!==headers.length)throw Error(`第 ${i+2} 列欄位數不符`);return Object.fromEntries(headers.map((h,j)=>[h,r[j]]));});
  }
- return{addDays,weekday,period,lessons,remaining,inquiry,parseCSV};
+ function latestClassNote(data,classId){const selected=data.classes.find(c=>c.id===classId);if(!selected)return null;const ids=data.classes.filter(c=>c.name===selected.name).map(c=>c.id);return Object.entries(data.notes).filter(([,n])=>ids.includes(n.classId)).sort((a,b)=>(b[1].date+b[1].time).localeCompare(a[1].date+a[1].time))[0]||null;}
+ return{addDays,weekday,period,lessons,remaining,inquiry,parseCSV,latestClassNote};
 });

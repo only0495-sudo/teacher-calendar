@@ -22,3 +22,4 @@
  dialog{max-height:85dvh;overflow:auto}.modal-body{padding-bottom:max(20px,env(safe-area-inset-bottom))}
  .calendar-tools{flex-wrap:wrap}.calendar-tools select{max-width:100%;min-height:44px}
 }
+.class-panel{padding:20px;margin-top:18px}.class-panel-columns{display:grid;grid-template-columns:1fr 1fr;gap:28px}.class-panel h3{font-size:15px;margin:14px 0 8px}.class-note-text{white-space:pre-wrap;overflow-wrap:anywhere;margin:10px 0}.class-panel textarea{font-size:16px}.exam-cutoff{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px;margin:8px 0 18px}.day .tag{flex-shrink:0}.day{height:auto}.calendar-tools{flex-wrap:wrap}@media(max-width:760px){.class-panel-columns{grid-template-columns:1fr;gap:8px}.class-panel{padding:16px}.class-panel h2{font-size:18px}.teacher-choice b{font-size:17px}}

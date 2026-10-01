@@ -3,7 +3,7 @@
 document.body.insertAdjacentHTML('beforeend',`<dialog id="weeklyDialog" style="width:min(960px,calc(100% - 28px))"><div class="modal-head"><h2>每週課表</h2><button class="close" data-close aria-label="關閉">×</button></div><div class="modal-body"><p id="weeklyCaption" class="muted"></p><div id="weeklyTable" class="import-table" style="max-height:65vh"></div><p class="help">探究實作列出原課表時段供參考；實際授課／換課日期請至探究專區登記。未自行推算學期目標或已完成堂數。</p></div></dialog>`);
 $('#showSchedule').onclick=()=>{
  $('#weeklyCaption').textContent=`${state.teacher} · ${state.termName}`;
- const times=['08:10','09:10','10:10','11:10','13:10','14:20','15:20','16:20'];
+ const times=state.periodTimes||['08:10','09:10','10:10','11:10','13:10','14:20','15:20','16:20'];
  const allTimes=[...new Set([...times,...state.classes.flatMap(c=>c.slots.map(s=>s.time))])].sort();
  $('#weeklyTable').innerHTML=`<table><thead><tr><th>節次／時間</th>${[1,2,3,4,5].map(d=>`<th>星期${week[d]}</th>`).join('')}</tr></thead><tbody>${allTimes.map(t=>`<tr><th>${times.indexOf(t)>=0?'第 '+(times.indexOf(t)+1)+' 節<br>':''}${t}</th>${[1,2,3,4,5].map(d=>`<td>${state.classes.filter(c=>c.slots.some(s=>s.day===d&&s.time===t)).map(c=>`<b>${esc(c.name)}</b><br>${esc(c.subject)}${c.mode==='inquiry'?'<br><small>原排時段</small>':''}`).join('<hr>')||'—'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
  $('#weeklyDialog').showModal();
