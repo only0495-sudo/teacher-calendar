@@ -1,6 +1,6 @@
 // App shell only. Uploaded files stay in IndexedDB; no user data is sent over the network.
-const CACHE='keri-shell-v4-4';
-const ASSETS=['./planner.js','./class-panel.js','./hexin-data.js','./cloud-config.js','./cloud.css','./cloud-sync.js','./cloud.js','./','./index.html','./styles.css?v=7','./teacher-data.js','./school.js','./engine.js','./storage.js','./app.js','./features.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
+const CACHE='keri-shell-v4-5';
+const ASSETS=['./planner.js','./class-panel.js','./hexin-data.js','./cloud-config.js','./cloud.css','./cloud-sync.js','./cloud.js','./','./index.html','./styles.css?v=8','./teacher-data.js','./school.js','./engine.js','./storage.js','./app.js','./features.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('keri-shell-')&&k!==CACHE).map(k=>caches.delete(k))))));
 self.addEventListener('fetch',e=>{const url=new URL(e.request.url);if(e.request.method!=='GET'||url.origin!==location.origin||!ASSETS.some(path=>new URL(path,self.registration.scope).pathname===url.pathname))return;e.respondWith(fetch(e.request).then(response=>{if(response.ok){const copy=response.clone();e.waitUntil(caches.open(CACHE).then(c=>c.put(e.request,copy)));}return response;}).catch(async()=>await caches.match(e.request)||Response.error()));});

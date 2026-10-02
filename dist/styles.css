@@ -26,3 +26,6 @@
 
 /* Weekly feedback and one-off lesson adjustments. */
 [hidden]{display:none!important}.adjust-dialog{width:min(900px,calc(100% - 28px))}.adjust-preview{padding:12px;background:#eef3eb;border-radius:10px;margin:12px 0;line-height:1.8}#adjustWeekTable{max-height:340px}#feedbackPanel textarea{resize:vertical;min-height:170px}#feedbackPanel .row{flex-wrap:wrap}#adjustConflicts{color:#805523}
+
+/* Changed lessons stay conspicuous in month, list and daily views. */
+.day .tag.moved-lesson,.day.past .tag.moved-lesson{background:#c026d3;color:#fff;font-weight:700;border-left:3px solid #86198f}.list-lesson.moved-lesson{background:#fae8ff;color:#86198f;border-left:4px solid #c026d3;font-weight:700}.lesson.moved-lesson{border-left:4px solid #c026d3;padding-left:12px}.lesson.moved-lesson .lesson-head>.muted{background:#c026d3;color:#fff;padding:3px 8px;border-radius:5px;font-weight:700}.legend i.moved-legend{background:#c026d3}
