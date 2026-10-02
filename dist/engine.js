@@ -18,6 +18,10 @@
    }
    for(const e of data.events.filter(e=>e.date===d&&e.type==='extra'&&(e.classId==='all'||e.classId===cl.id)))result.push({date:d,classId:cl.id,time:e.time,key:`${d}_${cl.id}_extra_${e.id}`,cancelled:false,extra:true,title:e.title});
   }
+  for(const change of data.lessonChanges||[]){
+   for(let i=result.length-1;i>=0;i--)if(result[i].key===change.source?.key||(change.replaced||[]).includes(result[i].key))result.splice(i,1);
+   if(change.type!=='delete'&&change.date===d&&(c==='all'||c===change.classId))result.push({date:d,classId:change.classId,time:change.time,key:'change_'+change.id,cancelled:false,extra:change.type==='extra',moved:change.type==='move'});
+  }
   return result.sort((a,b)=>a.time.localeCompare(b.time));
  }
  function remaining(c,index,data,at){
@@ -48,5 +52,6 @@
   return rows.map((r,i)=>{if(r.length!==headers.length)throw Error(`第 ${i+2} 列欄位數不符`);return Object.fromEntries(headers.map((h,j)=>[h,r[j]]));});
  }
  function latestClassNote(data,classId){const selected=data.classes.find(c=>c.id===classId);if(!selected)return null;const ids=data.classes.filter(c=>c.name===selected.name).map(c=>c.id);return Object.entries(data.notes).filter(([,n])=>ids.includes(n.classId)).sort((a,b)=>(b[1].date+b[1].time).localeCompare(a[1].date+a[1].time))[0]||null;}
- return{addDays,weekday,period,lessons,remaining,inquiry,parseCSV,latestClassNote};
+ const feedbackWeek=d=>addDays(d,-((weekday(d)+1)%7));
+ return{addDays,weekday,period,lessons,remaining,inquiry,parseCSV,latestClassNote,feedbackWeek};
 });
