@@ -6,6 +6,7 @@ validate=function(x){
  const str=(s,max=100)=>typeof s==='string'&&s.trim().length>0&&s.length<=max;
  const id=s=>typeof s==='string'&&/^[a-zA-Z0-9_-]{1,100}$/.test(s);
  if(!x||x.version!==2||!str(x.teacher)||!str(x.termName)||!validDate(x.termStart)||!validDate(x.termEnd)||x.termEnd<x.termStart||new Date(x.termEnd)-new Date(x.termStart)>370*86400000||!Array.isArray(x.classes)||(x.classes.length<1||x.classes.length>100)||!Array.isArray(x.exams)||x.exams.length!==3||!Array.isArray(x.events)||x.events.length>2000||!Array.isArray(x.sessions)||x.sessions.length>5000||!Array.isArray(x.sources)||!x.notes||typeof x.notes!=='object'||Array.isArray(x.notes))return false;
+ if(x.weeklyProgress!==undefined&&!WeeklyProgress.valid(x))return false;
  const ids=x.classes.map(c=>c.id);if(new Set(ids).size!==ids.length||!ids.every(id))return false;
  if(!x.classes.every(c=>str(c.name)&&str(c.subject)&&['exam','inquiry','activity'].includes(c.mode)&&Number.isInteger(c.target)&&c.target>=0&&c.target<=1000&&['target','scheduled'].includes(c.inquiryMethod)&&Array.isArray(c.slots)&&c.slots.length<=50&&c.slots.every(s=>Number.isInteger(s.day)&&s.day>=0&&s.day<=6&&validTime(s.time))&&new Set(c.slots.map(s=>s.day+s.time)).size===c.slots.length))return false;
  if(!x.exams.every((e,i)=>str(e.name)&&validDate(e.date)&&validDate(e.end)&&e.date<=e.end&&e.date>=x.termStart&&e.end<=x.termEnd&&(!i||e.date>x.exams[i-1].end)))return false;

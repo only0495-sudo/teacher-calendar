@@ -1,0 +1,17 @@
+const assert=require('assert/strict'),fs=require('fs'),vm=require('vm'),W=require('./dist/weekly-model.js');new vm.Script(fs.readFileSync('dist/weekly-grid.js','utf8'));
+const ctx={};vm.runInNewContext(fs.readFileSync('dist/hexin-data.js','utf8'),ctx);const d=JSON.parse(JSON.stringify(ctx.HexinPreset.data));
+assert.equal(W.columns(d).length,7);assert.equal(W.weeks(d).length,21);assert.deepEqual(W.weeks(d)[0].from,'2026-08-31');assert.equal(W.weeks(d).at(-1).to,'2027-01-20');assert.equal(W.monday('2026-10-26'),'2026-10-26');assert.equal(W.monday('2027-01-03'),'2026-12-28');
+d.notes={a:{classId:'hx-c109',date:'2026-10-27',time:'08:10',content:'進度一',homework:'練習'},b:{classId:'hx-a109',date:'2026-10-29',time:'14:10',content:'活動',homework:''},c:{classId:'hx-c101',date:'2026-10-27',time:'15:10',content:'其他班',homework:''}};const group=W.columns(d).find(c=>c.id==='hx-c109');assert.ok(W.cell(d,'2026-10-26',group).includes('進度一'));assert.ok(W.cell(d,'2026-10-26',group).includes('活動'));assert.ok(!W.cell(d,'2026-10-26',group).includes('其他班'));assert.ok(W.reminders(d,'2026-10-26').includes('光復節補假'));
+d.weeklyProgress={'2026-10-26':{classes:{'hx-c109':'本週摘要'},reminder:'自訂提醒'}};assert.equal(W.valid(d),true);assert.equal(W.cell(d,'2026-10-26',group),'本週摘要');assert.equal(W.reminders(d,'2026-10-26'),'自訂提醒');d.weeklyProgress['2026-10-26'].classes['hx-c109']='';assert.equal(W.cell(d,'2026-10-26',group),'');assert.equal(d.notes.a.content,'進度一');assert.equal(W.cell(JSON.parse(JSON.stringify(d)),'2026-10-26',group),'');d.weeklyProgress['2026-10-27']={};assert.equal(W.valid(d),false);
+console.log('PASS: weekly columns, semester and year boundaries, existing notes, school reminders, manual overrides, clearing cells, persistence and validation');
+// Exercise the real save handler without touching either teacher's cloud records.
+const source=fs.readFileSync('dist/weekly-grid.js','utf8');
+const draft=new Map(),status={textContent:''};let allowSave=true;
+const saveContext={state:structuredClone(ctx.HexinPreset.data),structuredClone,weeklySignature:'old',weeklyDraftKey:(w,c)=>`hexin:${w}:${c}`,$:()=>status,localStorage:{removeItem:k=>draft.delete(k)}};
+saveContext.commitPlanner=next=>{if(!allowSave||!W.valid(next))return false;saveContext.state=next;return true;};
+vm.createContext(saveContext);vm.runInContext(source.slice(source.indexOf('function saveWeeklyField('),source.indexOf("$('#weeklyScroll').oninput")),saveContext);
+const field={matches:()=>true,dataset:{week:'2026-10-26',weeklyCol:'hx-c101',dirty:'true'},value:'週進度'};
+draft.set('hexin:2026-10-26:hx-c101','週進度');assert.equal(saveContext.saveWeeklyField(field),true);assert.equal(saveContext.state.weeklyProgress['2026-10-26'].classes['hx-c101'],'週進度');assert.equal(draft.size,0);
+field.value='未儲存草稿';draft.set('hexin:2026-10-26:hx-c101',field.value);allowSave=false;assert.equal(saveContext.saveWeeklyField(field),false);assert.equal(saveContext.state.weeklyProgress['2026-10-26'].classes['hx-c101'],'週進度');assert.equal(draft.size,1);
+allowSave=true;field.dataset.weeklyCol='reminder';field.value='本週提醒';assert.equal(saveContext.saveWeeklyField(field),true);assert.equal(saveContext.state.weeklyProgress['2026-10-26'].reminder,'本週提醒');assert.equal(saveContext.state.weeklyProgress['2026-10-26'].classes['hx-c101'],'週進度');
+console.log('PASS: inline saves, reminders, successful draft cleanup and failed-save draft retention');
